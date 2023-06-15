@@ -20,14 +20,16 @@ class HomeScreenWidgetProvider : HomeWidgetProvider() {
                 setOnClickPendingIntent(R.id.widget_root, pendingIntent)
 
                 val counter = widgetData.getInt("_counter", 0)
+                val followers = widgetData.getInt("_followers", 0)
 
-                var counterText = "Your counter value is: $counter"
+                var counterText = "Your counter value is: $counter $followers"
 
                 if (counter == 0) {
                     counterText = "You have not pressed the counter button"
                 }
 
                 setTextViewText(R.id.tv_counter, counterText)
+                setTextViewText(R.id.tv_followers,"$followers");
 
                 // Pending intent to update counter on button click
                 val backgroundIntent = HomeWidgetBackgroundIntent.getBroadcast(context,

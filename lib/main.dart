@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:home_widget/home_widget.dart';
+import 'package:http/http.dart' as http;
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -49,6 +52,7 @@ class MyHomePage extends StatefulWidget {
 
 class MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  int _followers = 0;
 
   @override
   void initState() {
@@ -67,6 +71,7 @@ class MyHomePageState extends State<MyHomePage> {
 
   Future<void> updateAppWidget() async {
     await HomeWidget.saveWidgetData<int>('_counter', _counter);
+    await HomeWidget.saveWidgetData<int>('_followers', _followers);
     await HomeWidget.updateWidget(
         name: 'HomeScreenWidgetProvider', iOSName: 'HomeScreenWidgetProvider');
   }
@@ -80,6 +85,7 @@ class MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    TextEditingController username = TextEditingController();
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -88,6 +94,20 @@ class MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            TextField(controller: username,),
+            TextButton(onPressed: () async{
+              final res = await http.get(Uri.parse("https://api.github.com/users/${username.text}"));
+              final response = jsonDecode(res.body);
+              print(response);
+              setState((){
+                _counter = response["followers"];
+                _followers = response["followers"];
+              });
+              print(_counter);
+              updateAppWidget();
+
+              username.text='';
+            }, child: Text('Submit')),
             const Text(
               'You have pushed the button this many times:',
             ),
